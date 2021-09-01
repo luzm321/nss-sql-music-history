@@ -130,8 +130,72 @@ SELECT a.Title, s.Title FROM Album a LEFT JOIN Song s ON s.AlbumId = a.Id;
 SELECT a.Title, s.Title FROM Song s LEFT JOIN Album a ON s.AlbumId = a.Id;
 
 --Write a SELECT statement to display how many songs exist for each album. You'll need to use the COUNT() function and the GROUP BY keyword sequence.
+SELECT
+	al.Title,
+	COUNT(s.AlbumId) [Number of Songs in Album]
+FROM Song s
+LEFT JOIN Album al
+ON al.Id = s.AlbumId
+GROUP BY al.Title;
+
+--Write a SELECT statement to display how many songs exist for each artist. You'll need to use the COUNT() function and the GROUP BY keyword sequence.
+SELECT
+	ar.ArtistName,
+	COUNT(s.ArtistId) [Number of Songs By Artist]
+FROM Song s
+LEFT JOIN Artist ar
+ON ar.Id = s.ArtistId
+GROUP BY ar.ArtistName;
+
+--Write a SELECT statement to display how many songs exist for each genre. You'll need to use the COUNT() function and the GROUP BY keyword sequence.
+SELECT
+	g.Name [Genre Name],
+	COUNT(s.GenreId) [Number of Songs in Genre]
+FROM Song s
+LEFT JOIN Genre g
+ON g.Id =s.GenreId
+GROUP BY g.Name
+--ORDER BY g.Name DESC;
+
+--Write a SELECT query that lists the Artists that have put out records on more than one record label. Hint: When using GROUP BY instead of using a WHERE clause, use the HAVING keyword
 SELECT 
-	COUNT(Id) [Number of Songs In Album], 
-	Title
-FROM  Song 
-GROUP BY Title
+	ar.ArtistName,
+	COUNT(DISTINCT al.Label) [Number of Labels]
+FROM Artist ar
+INNER JOIN Album al
+ON al.ArtistId = ar.Id
+GROUP BY ar.ArtistName
+HAVING COUNT(DISTINCT al.Label) > 1;
+
+--Using MAX() function, write a select statement to find the album with the longest duration. The result should display the album title and the duration.
+SELECT
+	al.Title [Album Title],
+	al.AlbumLength [Album With Longest Duration]
+FROM Album al
+WHERE al.AlbumLength = (
+	SELECT MAX(al.AlbumLength)
+	FROM Album al
+);
+
+--Using MAX() function, write a select statement to find the song with the longest duration. The result should display the song title and the duration.
+SELECT
+	s.Title [Song Title],
+	s.SongLength [Song With Longest Duration]
+FROM Song s
+WHERE s.SongLength = (
+	SELECT MAX(s.SongLength)
+	FROM Song s
+);
+
+--Modify the previous query to also display the title of the album.
+SELECT
+	al.Title [Album Title],
+	s.Title [Song Title],
+	s.SongLength [Song With Longest Duration]
+FROM Song s
+INNER JOIN Album al
+ON s.AlbumId = al.Id
+WHERE s.SongLength = (
+	SELECT MAX(s.SongLength)
+	FROM Song s
+);
